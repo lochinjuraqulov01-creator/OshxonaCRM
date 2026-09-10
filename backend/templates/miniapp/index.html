@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Kuro Tokyo — Меню</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?v=4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/miniapp/style.css?v=4">
+</head>
+<body>
+<!-- ============ SKELET ============ -->
+<div id="app" class="app">
+
+    <!-- Yuqori panel (minimal, sticky) -->
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark">K</span>
+            <div>
+                <h1 id="brandName">Kuro Tokyo</h1>
+                <p id="greeting" class="brand-sub">Добро пожаловать!</p>
+            </div>
+        </div>
+        <button id="langToggle" class="lang-btn" style="display:none">RU</button>
+    </header>
+
+    <!-- ============ MENYU ============ -->
+    <main id="tab-menu" class="tab-content active">
+
+        <!-- HERO — premium kinematografik banner -->
+        <section class="hero">
+            <p class="hero-eyebrow">• РЕСТОРАН •</p>
+            <h2 class="hero-title">Вкусные блюда —<br><em>на расстоянии одного QR</em></h2>
+            <p class="hero-sub" data-i18n="heroSub">
+    Отсканируйте QR-код на столе, выберите блюда в меню — без официанта и без очереди.
+</p>
+
+<div class="hero-cta">
+    <button class="btn-gold" id="heroMenuBtn" data-i18n="heroCta">
+        Посмотреть меню
+    </button>
+
+    <button class="btn-outline" id="heroOrderBtn" data-i18n="heroOrder">
+        Оформить заказ
+    </button>
+</div>
+        </section>
+
+        <div class="cat-chips" id="catChips"><!-- Kategoriyalar JS bilan --></div>
+        <div class="products-grid" id="productsGrid">
+            <!-- Mahsulot kartochkalari: rasm, nom, narx, izoh — 2 qatorda -->
+        </div>
+
+        <!-- FOOTER — qorong'u va elegan -->
+        <footer class="footer">
+            <div class="footer-brand">
+    🍽 <span id="footerName">Kuro Tokyo</span>
+</div>
+
+<p class="footer-line" data-i18n="footerTag">
+    Сервис для клиентов — наш главный принцип
+</p>
+
+<div class="footer-meta">
+    <span data-i18n="footerHours">
+        🕘 Ежедневно с 10:00 до 22:00
+    </span>
+
+    <a href="tel:+998000000000" data-i18n="footerPhone">
+        📞 Позвонить
+    </a>
+</div>
+        </footer>
+    </main>
+
+    <!-- ============ SAVAT (to'liq sahifa) ============ -->
+    <main id="tab-cart" class="tab-content">
+        <h2 class="page-title" data-i18n="cartTitle">Корзина</h2>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="note-row">
+                <input type="text" id="orderNote" data-i18n-placeholder="notePlaceholder"
+                       placeholder="Комментарий к заказу (например: приготовьте побыстрее)">
+            </div>
+            <div class="total-row">
+                <span data-i18n="total">Итого:</span>
+                <strong id="cartModalTotal">0 сум</strong>
+            </div>
+            <button class="btn-gold btn-block" id="checkoutBtn" data-i18n="checkout">
+                📷 Оформить заказ (сканировать QR-код)
+            </button>
+        </div>
+    </main>
+
+    <!-- ============ BUYURTMALARIM ============ -->
+    <main id="tab-orders" class="tab-content">
+        <h2 class="page-title">Мои заказы</h2>
+        <div id="ordersList" class="orders-list"></div>
+    </main>
+
+    <!-- ============ FIKR QOLDIRISH ============ -->
+    <main id="tab-feedback" class="tab-content">
+        <h2 class="page-title" data-i18n="fbTitle">Оставить отзыв</h2>
+        <p class="page-sub" data-i18n="fbHint">Выберите доставленный заказ, поставьте оценку и оставьте свой отзыв.</p>
+        <div id="fbOrders" class="fb-orders"></div>
+        <div class="fb-form hidden" id="fbForm">
+            <div class="fb-stars" id="fbStars">
+                <button data-star="1">★</button><button data-star="2">★</button><button data-star="3">★</button><button data-star="4">★</button><button data-star="5">★</button>
+            </div>
+            <div class="fb-star-label" id="fbStarLabel"></div>
+            <textarea id="fbComment" rows="3" data-i18n-placeholder="fbPlaceholder"
+                      placeholder="Ваш отзыв (необязательно)..."></textarea>
+            <button class="btn-gold btn-block" id="fbSubmit" data-i18n="fbSubmit">Отправить</button>
+        </div>
+    </main>
+        <!-- ============ BIZ HAQIMIZDA (О нас) ============ -->
+    <main id="tab-about" class="tab-content">
+        <h2 class="page-title" data-i18n="tabAbout">О нас</h2>
+
+        <section class="about-hero">
+            <p class="about-eyebrow">• SUSHI &amp; JAPANESE CUISINE •</p>
+            <h3 class="about-name">Kuro Tokyo</h3>
+            <div class="about-divider">✦ ✦ ✦</div>
+            <p class="about-text">
+                Аутентичная японская кухня в Ташкенте. Мы готовим суши, роллы
+                и горячие блюда из свежих ингредиентов, бережно сохраняя
+                традиции Японии. Отсканируйте QR-код на столе — и ваши
+                блюда приедут без официанта и очереди.
+            </p>
+        </section>
+
+        <section class="about-cards">
+            <a class="about-card" href="tel:+998938298292">
+                <span class="about-ico">📞</span>
+                <span class="about-info">
+                    <span class="about-label">Телефон</span>
+                    <span class="about-value">+998 93 829 82 92</span>
+                </span>
+                <span class="about-arrow">›</span>
+            </a>
+            <a class="about-card" href="https://instagram.com/kuro_tokyo.uz" target="_blank" rel="noopener">
+                <span class="about-ico">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </span>
+                <span class="about-info">
+                    <span class="about-label">Instagram</span>
+                    <span class="about-value">@kuro_tokyo.uz</span>
+                </span>
+                <span class="about-arrow">›</span>
+            </a>
+            <a class="about-card" href="https://yandex.uz/maps/?text=Ташкент, Буюк Ипак Йули, 39" target="_blank" rel="noopener">
+                <span class="about-ico">📍</span>
+                <span class="about-info">
+                    <span class="about-label">Адрес</span>
+                    <span class="about-value">г. Ташкент, Учтепинский район,<br>ул. Буюк Ипак Йули, 39</span>
+                </span>
+                <span class="about-arrow">›</span>
+            </a>
+            <div class="about-card about-card-static">
+                <span class="about-ico">🕘</span>
+                <span class="about-info">
+                    <span class="about-label">Часы работы</span>
+                    <span class="about-value">Ежедневно 10:00 – 22:00</span>
+                </span>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============ PASTKI NAVIGATSIYA (fixed) ============ -->
+    <nav class="bottomnav">
+        <button class="bn-item active" data-tab="menu">
+            <span class="bn-icon">🍽</span>
+            <span class="bn-label" data-i18n="navMenu">Меню</span>
+        </button>
+        <button class="bn-item" data-tab="cart">
+            <span class="bn-icon">🛒<span class="bn-badge hidden" id="cartBadge">0</span></span>
+            <span class="bn-label" data-i18n="navCart">Корзина</span>
+        </button>
+        <button class="bn-item" data-tab="orders">
+            <span class="bn-icon">📋</span>
+            <span class="bn-label" data-i18n="navOrders">Мои заказы</span>
+        </button>
+        <button class="bn-item" data-tab="feedback">
+            <span class="bn-icon">⭐</span>
+            <span class="bn-label" data-i18n="navFeedback">Отзывы</span>
+        </button>
+        <button class="bn-item" data-tab="about">
+            <span class="bn-icon">🏮</span>
+            <span class="bn-label" data-i18n="navAbout">О нас</span>
+        </button>
+    </nav>
+
+    <!-- ============ TASDIQLASH MODAL ============ -->
+    <div class="sheet-overlay hidden" id="confirmOverlay">
+        <div class="sheet small">
+            <div class="confirm-emoji">🪑</div>
+            <h2 data-i18n="confirmTitle">Подтвердить заказ?</h2>
+            <div class="confirm-info" id="confirmInfo"></div>
+            <div class="confirm-actions">
+                <button class="btn-gold btn-block" id="confirmYes" data-i18n="confirmYes">✅ Да, подтверждаю</button>
+                <button class="btn-outline btn-block" id="confirmNo" data-i18n="confirmNo">Отменить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MUVAFFAQIYAT MODAL ============ -->
+    <div class="sheet-overlay hidden" id="successOverlay">
+        <div class="sheet small center">
+            <div class="success-emoji">🎉</div>
+            <h2 data-i18n="successTitle">Ваш заказ принят!</h2>
+            <p class="success-sub" id="successSub"></p>
+            <p class="success-hint" data-i18n="successHint">
+                Когда заказ будет готов, мы сообщим вам через бота. Приятного аппетита!
+            </p>
+            <button class="btn-gold btn-block" id="successOk" data-i18n="successOk">Спасибо, понятно</button>
+        </div>
+    </div>
+
+        <!-- ============ MAHSULOT DETALI ============ -->
+    <div class="sheet-overlay hidden" id="productOverlay">
+        <div class="sheet small">
+            <button class="pd-close" id="pdClose">✕</button>
+            <img class="pd-img" id="pdImage" alt="">
+            <div class="pd-emoji" id="pdEmoji">🍽</div>
+            <h2 class="pd-name" id="pdName"></h2>
+            <p class="pd-desc" id="pdDesc"></p>
+            <div class="pd-price" id="pdPrice"></div>
+            <div class="pd-qty">
+                <button id="pdMinus">−</button>
+                <span id="pdQty">1</span>
+                <button id="pdPlus">+</button>
+            </div>
+            <button class="btn-gold btn-block pd-add" id="pdAdd">🛒 Добавить в корзину</button>
+        </div>
+    </div>
+    <!-- Toast -->
+    <div class="toast hidden" id="toast"></div>
+</div>
+
+<script src="/static/miniapp/app.js?v=4"></script>
+
+</body>
+</html>

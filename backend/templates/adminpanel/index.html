@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuro Tokyo — Панель администратора</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/adminpanel/style.css?v=2">
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginView" class="login-wrap">
+    <form id="loginForm" class="login-card">
+        <div class="login-logo">🍽</div>
+        <h1>Kuro Tokyo</h1>
+        <p>Панель администратора — система автоматизации кухни</p>
+        <input type="text" id="loginUser" placeholder="Логин" autocomplete="username" required>
+        <input type="password" id="loginPass" placeholder="Пароль" autocomplete="current-password" required>
+        <button type="submit" id="loginBtn" class="btn btn-primary">Войти</button>
+        <p id="loginError" class="login-error hidden"></p>
+    </form>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appView" class="app hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="side-brand">🍽 <span>Kuro Tokyo</span></div>
+        <nav>
+            <a data-page="dashboard" class="active">📊 Панель управления</a>
+            <a data-page="orders">🧾 Заказы<span id="wsBadge" class="badge hidden">0</span></a>
+            <a data-page="products">🍕 Товары / Продукты</a>
+            <a data-page="categories">📂 Категории</a>
+            <a data-page="tables">🪑 Столы и QR</a>
+            <a data-page="stats">📈 Статистика</a>
+            <a data-page="feedback">⭐ Отзывы</a>
+            <a data-page="profile">👤 Профиль</a>
+        </nav>
+        <div class="side-foot">
+            <span id="whoami"></span>
+            <button id="logoutBtn" class="btn btn-ghost">Выход</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <!-- Mobile topbar -->
+        <div class="mobile-top">
+            <button id="menuToggle" class="btn btn-ghost">☰</button>
+            <b>Kuro Tokyo Админ</b>
+        </div>
+
+        <!-- ============ DASHBOARD ============ -->
+        <section id="page-dashboard" class="page active">
+            <h2>📊 Сегодняшние показатели</h2>
+            <div class="kpi-grid" id="kpiGrid"></div>
+
+            <h3>🪑 Состояние столов</h3>
+            <div class="tables-map" id="tablesMap"></div>
+
+            <div class="two-col">
+                <div class="card">
+                    <h3>🏆 Сегодняшние ТОП-товары</h3>
+                    <div id="todayTop"></div>
+                </div>
+                <div class="card">
+                    <h3>😴 Не проданные сегодня товары</h3>
+                    <div id="todayUnsold"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ BUYURTMALAR ============ -->
+        <section id="page-orders" class="page">
+            <div class="page-head">
+                <h2>🧾 Заказы <span id="liveDot" class="live-dot" title="Подключение в реальном времени"></span></h2>
+                <div class="filters">
+                    <select id="fStatus">
+                        <option value="">Все статусы</option>
+                        <option value="new">🆕 Новый</option>
+                        <option value="preparing">👨‍🍳 Готовится</option>
+                        <option value="in_progress">🚶 В процессе</option>
+                        <option value="delivered">✅ Доставлен</option>
+                        <option value="cancelled">❌ Отменён</option>
+                        </select>
+                        <input type="date" id="fFrom" title="Период (от)">
+                        <input type="date" id="fTo" title="Период (до)">
+                        <input type="text" id="fSearch" placeholder="№ или стол" style="max-width:110px">
+                        <select id="fOrder">
+                            <option value="-created_at">Новые → старые</option>
+                            <option value="created_at">Старые → новые (очередь)</option>
+                            <option value="-total">Сумма: большая → маленькая</option>
+                        </select>
+                        <button id="applyFilters" class="btn btn-primary">Фильтр</button>
+                        </div>
+                        </div>
+            <div class="card table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>№</th><th>Стол</th><th>Время</th><th>Состав</th>
+                            <th>Сумма</th><th>Статус</th><th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTbody"></tbody>
+                </table>
+                <div class="pager" id="ordersPager"></div>
+            </div>
+        </section>
+
+        <!-- ============ MAHSULOTLAR ============ -->
+        <section id="page-products" class="page">
+            <div class="page-head">
+                <h2>🍕 Товары</h2>
+                <button id="addProductBtn" class="btn btn-primary">+ Добавить товар</button>
+            </div>
+            <div class="card table-card">
+                <table>
+                    <thead><tr><th>Фото</th><th>Название</th><th>Категория</th><th>Цена</th><th>В продаже</th><th>Действие</th></tr></thead>
+                    <tbody id="productsTbody"></tbody>
+                </table>
+                <div class="pager" id="productsPager"></div>
+            </div>
+        </section>
+
+        <!-- ============ KATEGORIYALAR ============ -->
+        <section id="page-categories" class="page">
+            <div class="page-head">
+                <h2>📂 Категории</h2>
+                <button id="addCategoryBtn" class="btn btn-primary">+ Категория</button>
+                </div>
+                <div class="card table-card">
+                    <table>
+                        <thead><tr><th>Эмодзи</th><th>Название (ru)</th><th>Порядок</th>
+                        <tbody id="categoriesTbody"></tbody>
+                    </table>
+            </div>
+        </section>
+
+        <!-- ============ STOLLAR ============ -->
+        <section id="page-tables" class="page">
+            <div class="page-head">
+               <h2>🪑 Столы</h2>
+                <button id="addTableBtn" class="btn btn-primary">+ Добавить стол</button>
+            </div>
+            <div class="tables-grid" id="tablesGrid"></div>
+        </section>
+
+        <!-- ============ STATISTIKA ============ -->
+        <section id="page-stats" class="page">
+            <div class="page-head">
+                <h2>📈 Статистика и анализ</h2>
+                <select id="statsDays">
+                    <option value="7">7 дней</option>
+                    <option value="14">14 дней</option>
+                    <option value="30">30 дней</option>
+                    <option value="90">90 дней</option>
+                </select>
+            </div>
+            <div class="kpi-grid" id="statsKpi"></div>
+            <div class="two-col">
+                <div class="card"><h3>💰 Ежедневный доход</h3><canvas id="chartRevenue" height="120"></canvas></div>
+                <div class="card"><h3>🏆 ТОП-10 по продажам (уровень спроса)</h3><canvas id="chartTop" height="120"></canvas></div>
+            </div>
+            <div class="two-col">
+                <div class="card">
+                   <h3>📊 Уровень спроса на товары</h3>
+                    <table class="mini-table"><thead><tr><th>Товар</th><th>Количество</th><th>Доля</th><th>Уровень</th></tr></thead><tbody id="demandTbody"></tbody></table>
+                    </div>
+                    <div class="card">
+                        <h3>🪑 Выручка по столам</h3>
+                        <table class="mini-table"><thead><tr><th>Стол</th><th>Заказы</th><th>Выручка</th></tr></thead><tbody id="tableRevTbody"></tbody></table>
+                    </div>
+            </div>
+        </section>
+
+        <!-- ============ FIKRLAR ============ -->
+       <section id="page-feedback" class="page">
+    <h2>⭐ Отзывы клиентов</h2>
+    <div id="feedbackList" class="feedback-list"></div>
+</section>
+        <!-- ============ PROFIL ============ -->
+        <section id="page-profile" class="page">
+            <div class="page-head">
+                <h2>👤 Мой профиль</h2>
+            </div>
+            <div class="two-col">
+                <!-- Chap: avatar -->
+                <div class="card profile-card">
+                    <h3>Фото профиля</h3>
+                    <div class="profile-avatar-wrap">
+                        <img id="profAvatar" class="profile-avatar hidden" alt="Аватар">
+                        <div class="profile-avatar-fallback" id="profAvatarFallback">👤</div>
+                    </div>
+                    <p class="profile-hint">JPG или PNG · до 2 МБ</p>
+                    <input type="file" id="profAvatarFile" accept="image/*" class="hidden">
+                    <div class="profile-avatar-actions">
+                        <button id="profAvatarBtn" class="btn btn-blue">📷 Выбрать фото</button>
+                        <button id="profAvatarSave" class="btn btn-primary">Загрузить</button>
+                    </div>
+                </div>
+
+                <!-- O'ng: ma'lumotlar -->
+                <div class="card">
+                    <h3>Данные</h3>
+                    <div class="form-2col">
+                        <div class="form-row"><label>Имя</label><input id="profFirstName" placeholder="Ваше имя"></div>
+                        <div class="form-row"><label>Фамилия</label><input id="profLastName" placeholder="Ваша фамилия"></div>
+                    </div>
+                    <div class="form-2col">
+                        <div class="form-row"><label>Телефон</label><input id="profPhone" placeholder="+998 90 123 45 67"></div>
+                        <div class="form-row"><label>Email</label><input id="profEmail" type="email" placeholder="admin@restoran.uz"></div>
+                    </div>
+                    <div class="profile-meta">
+                        <span>Логин: <b id="profUsername">—</b></span>
+                        <span>Должность: <b id="profRole">—</b></span>
+                        <span>Дата регистрации: <b id="profJoined">—</b></span>
+                    </div>
+                    <button id="profSaveBtn" class="btn btn-primary">💾 Сохранить</button>
+                </div>
+            </div>
+
+            <!-- Parol -->
+            <div class="card profile-pass">
+                <h3>🔐 Изменение пароля</h3>
+                <div class="form-row"><label>Старый пароль</label><input type="password" id="profOldPass" autocomplete="current-password"></div>
+                <div class="form-2col">
+                    <div class="form-row"><label>Новый пароль (не менее 6 символов)</label><input type="password" id="profNewPass" autocomplete="new-password"></div>
+                    <div class="form-row"><label>Новый пароль (повтор)</label><input type="password" id="profNewPass2" autocomplete="new-password"></div>
+                </div>
+                <button id="profPassBtn" class="btn btn-primary">🔑 Обновить пароль</button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- ================= MODALLAR ================= -->
+<div class="modal hidden" id="modal">
+    <div class="modal-box" id="modalBox"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="/static/adminpanel/app.js?v=2"></script>
+</body>
+</html>
